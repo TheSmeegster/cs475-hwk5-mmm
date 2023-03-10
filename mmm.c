@@ -9,37 +9,77 @@
  * Allocate and initialize the matrices on the heap. Populate
  * the input matrices with random integers from 0 to 99
  */
-void mmm_init() {
-	// TODO
+
+int **array1;
+int **array2;
+int N;
+
+void mmm_init(int size) {
+
+	N = size;
+	array1 = (int**) malloc(sizeof(int*) * N);
+	array2 = (int**) malloc(sizeof(int*) * N);
+
+	for(int i = 0; i < N; i++){
+		array1[i] = (int*) malloc(sizeof(int) * N);
+		for(int j = 0; j < N; j++){
+			array1[i][j] = rand() % 100;
+		}
+	} 
+
+	for(int i = 0; i < N; i++){
+		array2[i] = (int*) malloc(sizeof(int) * N);
+		for(int j = 0; j < N; j++){
+			array2[i][j] = rand() % 100;
+		}
+	}
 }
 
 /**
  * Reset a given matrix to zeroes
  * @param matrix pointer to a 2D array
  */
-void mmm_reset(double **matrix) {
-	// TODO
+void mmm_reset() {
+	for(int i = 0; i < N; i++){
+		for(int j = 0; j < N; j++){
+			array1[i][j] = 0;
+			array2[i][j] = 0;
+		}
+	}
 }
 
 /**
  * Free up memory allocated to all matrices
  */
-void mmm_freeup() {
-	// TODO
+void mmm_freeup(int N) {
+	free(array1);
+	free(array2);
+	array1 = NULL;
+	array2 = NULL;
 }
 
 /**
  * Sequential MMM
  */
 void mmm_seq() {
-	// TODO - code to perform sequential MMM
+	for(int i = 0; i < N; i++){
+		printf("\n");
+		for(int j = 0; j < N; j++){
+			printf("%i ", array1[i][j] * array2[j][i]);
+		}
+	}
 }
 
 /**
  * Parallel MMM
  */
-void *mmm_par(void *args) {
-	// TODO - code to perform parallel MMM
+void *mmm_par(int args[]) {
+	for(int i = args[0]; i < args[1]; i++){
+		printf("\n");
+		for(int j = 0; j < N; j++){
+			printf("%i ", array1[i][j] * array2[j][i]);
+		}
+	}
 }
 
 /**
