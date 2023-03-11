@@ -13,37 +13,40 @@
 int **array1;
 int **array2;
 int N;
+int **calcArray;
+int **seqArray;
 
 void mmm_init(int size) {
 
 	N = size;
 	array1 = (int**) malloc(sizeof(int*) * N);
 	array2 = (int**) malloc(sizeof(int*) * N);
+	calcArray = (int**) malloc(sizeof(int*) * N);
+	seqArray = (int**) malloc(sizeof(int*) * N);
 
+	//Fills arrays with random values based on indicated dimensions
 	for(int i = 0; i < N; i++){
 		array1[i] = (int*) malloc(sizeof(int) * N);
+		calcArray[i] = (int*) malloc(sizeof(int*) * N);
+		array2[i] = (int*) malloc(sizeof(int) * N);
+		seqArray[i] = (int*) malloc(sizeof(int*) * N);
 		for(int j = 0; j < N; j++){
 			array1[i][j] = rand() % 100;
-		}
-	} 
-
-	for(int i = 0; i < N; i++){
-		array2[i] = (int*) malloc(sizeof(int) * N);
-		for(int j = 0; j < N; j++){
 			array2[i][j] = rand() % 100;
 		}
 	}
 }
 
-/**
- * Reset a given matrix to zeroes
- * @param matrix pointer to a 2D array
- */
+
+
+//Resets matrices to zero
 void mmm_reset() {
 	for(int i = 0; i < N; i++){
 		for(int j = 0; j < N; j++){
 			array1[i][j] = 0;
 			array2[i][j] = 0;
+			calcArray[i][j] = 0;
+			seqArray[i][j] = 0;
 		}
 	}
 }
@@ -51,20 +54,29 @@ void mmm_reset() {
 /**
  * Free up memory allocated to all matrices
  */
+//Frees up memory
 void mmm_freeup(int N) {
 	free(array1);
 	free(array2);
+	free(calcArray);
+	free(seqArray);
 	array1 = NULL;
 	array2 = NULL;
+	calcArray = NULL;
+	seqArray = NULL;
 }
 
 /**
  * Sequential MMM
  */
+
+//Runs sequential method
 void mmm_seq() {
 	for(int i = 0; i < N; i++){
 		printf("\n");
 		for(int j = 0; j < N; j++){
+			calcArray[i][j] = (array1[i][j] * array2[j][i]);
+			seqArray[i][j] = array1[i][j] * array2[j][i];
 			printf("%i ", array1[i][j] * array2[j][i]);
 		}
 	}
@@ -73,10 +85,13 @@ void mmm_seq() {
 /**
  * Parallel MMM
  */
+
+//Runs parallel method
 void *mmm_par(int args[]) {
 	for(int i = args[0]; i < args[1]; i++){
 		printf("\n");
 		for(int j = 0; j < N; j++){
+			calcArray[i][j] = array1[i][j] * array2[j][i];
 			printf("%i ", array1[i][j] * array2[j][i]);
 		}
 	}
@@ -89,7 +104,16 @@ void *mmm_par(int args[]) {
  * @return the largest error between two corresponding elements
  * in the result matrices
  */
+
+//Supposed to tell if there is an incorrect number in parallel compared to sequential (does not work properly, the arrays themselves are identical)
 double mmm_verify() {
-	// TODO
-	return -1;
+	double largest = 0;
+	for(int i = 0; i < N; i++){
+		for(int j = 0; j < N; j++){
+			if(seqArray[i][j] != calcArray[i][j] && abs(seqArray[i][j] - calcArray[i][j]) > largest){
+				largest = abs(seqArray[i][j] - calcArray[i][j]);
+			}
+		}
+	}
+	return largest;
 }
